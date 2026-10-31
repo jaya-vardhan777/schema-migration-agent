@@ -1,0 +1,142 @@
+# Snowflake type mapping rulebook.
+mappings:
+  - source: [VARCHAR, VARCHAR2, NVARCHAR, TEXT, CHAR, NCHAR, CLOB, NCLOB, STRING]
+    target: STRING
+  - source: [BOOLEAN, BOOL]
+    target: BOOLEAN
+  - source: [TINYINT, SMALLINT, INT, INTEGER, BIGINT, INT2, INT4, INT8, MEDIUMINT]
+    target: NUMBER(38,0)
+  - source: [FLOAT, DOUBLE, "DOUBLE PRECISION", REAL, BINARY_FLOAT, BINARY_DOUBLE, FLOAT4, FLOAT8]
+    target: FLOAT
+  - source: NUMBER
+    rules:
+      - when: "precision is not None"
+        target: "NUMBER({precision}, {scale_or_0})"
+      - when: "true"
+        target: NUMBER(38,0)
+  - source: [NUMERIC, DECIMAL, DEC]
+    rules:
+      - when: "precision is not None"
+        target: "NUMBER({precision}, {scale_or_0})"
+      - when: "true"
+        target: NUMBER(38,0)
+  - source: ["TIMESTAMP WITH TIME ZONE", TIMESTAMPTZ]
+    target: TIMESTAMP_TZ
+  - source: ["TIMESTAMP WITHOUT TIME ZONE", TIMESTAMP]
+    target: TIMESTAMP_NTZ
+  - source: [DATETIME]
+    target: TIMESTAMP_NTZ
+  - source: [DATE]
+    target: DATE
+  - source: [TIME]
+    target: TIME
+  - source: [BLOB, BYTEA, RAW, VARBINARY, BINARY]
+    target: BINARY
+  - source: [JSON, JSONB]
+    target: VARIANT
+  - source: [VARIANT]
+    target: VARIANT
+  - source: [UUID]
+    target: STRING
+  - source: [XMLTYPE, XML]
+    target: VARIANT
+
+metadata_columns:
+  - name: _ingested_at
+    type: TIMESTAMP_TZ
+    nullable: false
+    default: "CURRENT_TIMESTAMP()"
+    comment: "Row ingestion timestamp injected by schema-migrator."
+  - name: _source_hash
+    type: STRING
+    nullable: false
+    comment: "Deterministic hash of the source row for change detection."
+  - name: _source_system
+    type: STRING
+    nullable: true
+    comment: "Identifier of the originating system."
+
+reserved_words:
+  - ACCOUNT
+  - ALL
+  - ALTER
+  - AND
+  - ANY
+  - AS
+  - BETWEEN
+  - BY
+  - CASE
+  - CAST
+  - CHECK
+  - COLUMN
+  - CONNECT
+  - CONNECTION
+  - CONSTRAINT
+  - CREATE
+  - CROSS
+  - CURRENT
+  - DEFAULT
+  - DELETE
+  - DESC
+  - DISTINCT
+  - DROP
+  - ELSE
+  - EXISTS
+  - FALSE
+  - FOLLOWING
+  - FOR
+  - FROM
+  - FULL
+  - GRANT
+  - GROUP
+  - HAVING
+  - ILIKE
+  - IN
+  - INCREMENT
+  - INNER
+  - INSERT
+  - INTERSECT
+  - INTO
+  - IS
+  - JOIN
+  - LATERAL
+  - LEFT
+  - LIKE
+  - LOCALTIME
+  - LOCALTIMESTAMP
+  - MINUS
+  - NATURAL
+  - NOT
+  - NULL
+  - OF
+  - ON
+  - OR
+  - ORDER
+  - QUALIFY
+  - REGEXP
+  - REVOKE
+  - RIGHT
+  - RLIKE
+  - ROW
+  - ROWS
+  - SAMPLE
+  - SELECT
+  - SET
+  - SOME
+  - START
+  - TABLE
+  - TABLESAMPLE
+  - THEN
+  - TO
+  - TRIGGER
+  - TRUE
+  - TRY_CAST
+  - UNION
+  - UNIQUE
+  - UPDATE
+  - USING
+  - VALUES
+  - WHEN
+  - WHENEVER
+  - WHERE
+  - WITH

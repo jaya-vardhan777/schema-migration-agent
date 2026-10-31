@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "schema-migrator": {
+      "command": "python",
+      "args": ["-m", "schema_migrator.mcp_server"],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}

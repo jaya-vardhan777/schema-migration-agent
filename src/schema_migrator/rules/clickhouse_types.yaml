@@ -1,0 +1,137 @@
+# ClickHouse type mapping rulebook.
+mappings:
+  - source: [VARCHAR, VARCHAR2, NVARCHAR, TEXT, CHAR, NCHAR, CLOB, NCLOB, STRING]
+    target: String
+  - source: [BOOLEAN, BOOL]
+    target: Bool
+  - source: [TINYINT, INT2, SMALLINT]
+    target: Int16
+  - source: [INT, INTEGER, INT4, MEDIUMINT]
+    target: Int32
+  - source: [BIGINT, INT8]
+    target: Int64
+  - source: [FLOAT, FLOAT4, BINARY_FLOAT, REAL]
+    target: Float32
+  - source: [DOUBLE, "DOUBLE PRECISION", FLOAT8, BINARY_DOUBLE]
+    target: Float64
+  - source: NUMBER
+    rules:
+      - when: "scale == 0 and precision is not None and precision <= 9"
+        target: Int32
+      - when: "scale == 0 and precision is not None and precision <= 18"
+        target: Int64
+      - when: "scale == 0 and (precision is None or precision > 18)"
+        target: Int128
+      - when: "precision is not None and precision <= 38"
+        target: "Decimal({precision}, {scale_or_0})"
+      - when: "true"
+        target: "Decimal128({scale_or_18})"
+  - source: [NUMERIC, DECIMAL, DEC]
+    rules:
+      - when: "scale == 0 and precision is not None and precision <= 9"
+        target: Int32
+      - when: "precision is not None and precision <= 38"
+        target: "Decimal({precision}, {scale_or_0})"
+      - when: "true"
+        target: "Decimal128({scale_or_18})"
+  - source: ["TIMESTAMP WITH TIME ZONE", TIMESTAMPTZ]
+    target: "DateTime64(6, 'UTC')"
+  - source: ["TIMESTAMP WITHOUT TIME ZONE", TIMESTAMP, DATETIME]
+    target: "DateTime64(6)"
+  - source: [DATE]
+    target: Date32
+  - source: [TIME]
+    target: String
+  - source: [BLOB, BYTEA, RAW, VARBINARY, BINARY]
+    target: String
+  - source: [JSON, JSONB, VARIANT]
+    target: JSON
+  - source: [UUID]
+    target: UUID
+  - source: [XMLTYPE, XML]
+    target: String
+
+metadata_columns:
+  - name: _ingested_at
+    type: "DateTime64(6, 'UTC')"
+    nullable: false
+    default: "now64()"
+    comment: "Row ingestion timestamp injected by schema-migrator."
+  - name: _source_hash
+    type: String
+    nullable: false
+    comment: "Deterministic hash of the source row for change detection."
+  - name: _source_system
+    type: String
+    nullable: true
+    comment: "Identifier of the originating system."
+
+reserved_words:
+  - ALL
+  - AND
+  - ARRAY
+  - AS
+  - ASOF
+  - BETWEEN
+  - BY
+  - CASE
+  - CAST
+  - CROSS
+  - CUBE
+  - DAY
+  - DESC
+  - DISTINCT
+  - ELSE
+  - END
+  - FALSE
+  - FINAL
+  - FOR
+  - FROM
+  - FULL
+  - GLOBAL
+  - GROUP
+  - HAVING
+  - HOUR
+  - IF
+  - IN
+  - INNER
+  - INTERVAL
+  - INTO
+  - IS
+  - JOIN
+  - KEY
+  - LEFT
+  - LIKE
+  - LIMIT
+  - MINUTE
+  - MONTH
+  - NOT
+  - NULL
+  - ON
+  - OR
+  - ORDER
+  - OUTER
+  - OVER
+  - PARTITION
+  - PREWHERE
+  - PRIMARY
+  - QUARTER
+  - RIGHT
+  - ROLLUP
+  - SAMPLE
+  - SECOND
+  - SELECT
+  - SEMI
+  - SETTINGS
+  - THEN
+  - TO
+  - TOP
+  - TOTALS
+  - TRUE
+  - UNION
+  - USING
+  - WEEK
+  - WHEN
+  - WHERE
+  - WITH
+  - YEAR

@@ -1,0 +1,158 @@
+# BigQuery type mapping rulebook.
+# Evaluated top-to-bottom; the first matching rule wins.
+mappings:
+  - source: [VARCHAR, VARCHAR2, NVARCHAR, TEXT, CHAR, NCHAR, CLOB, NCLOB, STRING]
+    target: STRING
+  - source: [BOOLEAN, BOOL]
+    target: BOOL
+  - source: [SMALLINT, INT, INTEGER, BIGINT, INT2, INT4, INT8, TINYINT, MEDIUMINT]
+    target: INT64
+  - source: [FLOAT, DOUBLE, "DOUBLE PRECISION", REAL, BINARY_FLOAT, BINARY_DOUBLE, FLOAT4, FLOAT8]
+    target: FLOAT64
+  - source: NUMBER
+    rules:
+      - when: "scale == 0 and precision is not None and precision <= 18"
+        target: INT64
+      - when: "scale == 0 and (precision is None or precision > 18)"
+        target: "NUMERIC({precision_or_38}, 0)"
+      - when: "scale > 0 and precision is not None and precision <= 38 and scale <= 9"
+        target: "NUMERIC({precision}, {scale})"
+      - when: "true"
+        target: "BIGNUMERIC({precision_or_76}, {scale_or_38})"
+  - source: [NUMERIC, DECIMAL, DEC]
+    rules:
+      - when: "scale == 0 and precision is not None and precision <= 18"
+        target: INT64
+      - when: "precision is not None and precision <= 38 and (scale or 0) <= 9"
+        target: "NUMERIC({precision}, {scale_or_0})"
+      - when: "true"
+        target: "BIGNUMERIC({precision_or_76}, {scale_or_38})"
+  - source: ["TIMESTAMP WITH TIME ZONE", TIMESTAMPTZ, TIMESTAMPZ]
+    target: TIMESTAMP
+  - source: ["TIMESTAMP WITHOUT TIME ZONE", TIMESTAMP, DATETIME]
+    target: DATETIME
+  - source: [DATE]
+    target: DATE
+  - source: [TIME]
+    target: TIME
+  - source: [BLOB, BYTEA, RAW, VARBINARY, BINARY]
+    target: BYTES
+  - source: [JSON, JSONB, VARIANT]
+    target: JSON
+  - source: [UUID]
+    target: STRING
+  - source: [XMLTYPE, XML]
+    target: STRING
+
+metadata_columns:
+  - name: _ingested_at
+    type: TIMESTAMP
+    nullable: false
+    default: "CURRENT_TIMESTAMP()"
+    comment: "Row ingestion timestamp injected by schema-migrator."
+  - name: _source_hash
+    type: STRING
+    nullable: false
+    comment: "Deterministic hash of the source row for change detection."
+  - name: _source_system
+    type: STRING
+    nullable: true
+    comment: "Identifier of the originating system."
+
+reserved_words:
+  - ALL
+  - AND
+  - ANY
+  - ARRAY
+  - AS
+  - ASC
+  - ASSERT_ROWS_MODIFIED
+  - AT
+  - BETWEEN
+  - BY
+  - CASE
+  - CAST
+  - COLLATE
+  - CONTAINS
+  - CREATE
+  - CROSS
+  - CUBE
+  - CURRENT
+  - DEFAULT
+  - DEFINE
+  - DESC
+  - DISTINCT
+  - ELSE
+  - END
+  - ENUM
+  - ESCAPE
+  - EXCEPT
+  - EXCLUDE
+  - EXISTS
+  - EXTRACT
+  - FALSE
+  - FETCH
+  - FOLLOWING
+  - FOR
+  - FROM
+  - FULL
+  - GROUP
+  - GROUPING
+  - GROUPS
+  - HASH
+  - HAVING
+  - IF
+  - IGNORE
+  - IN
+  - INNER
+  - INTERSECT
+  - INTERVAL
+  - INTO
+  - IS
+  - JOIN
+  - LATERAL
+  - LEFT
+  - LIKE
+  - LIMIT
+  - LOOKUP
+  - MERGE
+  - NATURAL
+  - NEW
+  - NO
+  - NOT
+  - NULL
+  - NULLS
+  - OF
+  - ON
+  - OR
+  - ORDER
+  - OUTER
+  - OVER
+  - PARTITION
+  - PRECEDING
+  - PROTO
+  - QUALIFY
+  - RANGE
+  - RECURSIVE
+  - RESPECT
+  - RIGHT
+  - ROLLUP
+  - ROWS
+  - SELECT
+  - SET
+  - SOME
+  - STRUCT
+  - TABLESAMPLE
+  - THEN
+  - TO
+  - TREAT
+  - TRUE
+  - UNBOUNDED
+  - UNION
+  - UNNEST
+  - USING
+  - WHEN
+  - WHERE
+  - WINDOW
+  - WITH
+  - WITHIN

@@ -1,0 +1,28 @@
+table: customers
+schema: crm
+source_dialect: oracle
+comment: "Customer master with SCD-2 change tracking."
+primary_key: [customer_id]
+columns:
+  - name: customer_id
+    type: NUMBER(18,0)
+    nullable: false
+    comment: "Business key."
+  - name: full_name
+    type: VARCHAR2(200)
+  - name: email
+    type: VARCHAR2(320)
+    cluster_key: true
+    cluster_order: 1
+  - name: region_code
+    type: CHAR(3)
+    cluster_key: true
+    cluster_order: 2
+  - name: signup_date
+    type: DATE
+    partition_key: true
+    business_date: true
+  - name: last_updated
+    type: TIMESTAMP WITH TIME ZONE
+  - name: preferences
+    type: JSON

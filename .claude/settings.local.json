@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip --version)",
+      "Bash(python -m venv .venv)",
+      "Bash(./.venv/Scripts/python.exe -m pip install -q -e \".[dev]\")",
+      "Bash(./.venv/Scripts/python.exe -m pytest -x)",
+      "Bash(./.venv/Scripts/python.exe -m pytest)",
+      "Bash(./.venv/Scripts/python.exe -m pytest tests/test_parsers.py::test_parse_oracle_sql -x)",
+      "Bash(./.venv/Scripts/python.exe -m schema_migrator.cli dialects)",
+      "Bash(./.venv/Scripts/python.exe -m schema_migrator.cli transpile --source tests/fixtures/oracle.sql --target bigquery)",
+      "Bash(./.venv/Scripts/python.exe -m pytest -q)",
+      "Bash(./.venv/Scripts/python.exe -m schema_migrator.cli transpile --source tests/fixtures/schema.yaml --target snowflake)",
+      "Bash(./.venv/Scripts/python.exe -m schema_migrator.cli transpile --source tests/fixtures/postgres.sql --target clickhouse)",
+      "Bash(pip show *)",
+      "Bash(python *)",
+      "Bash(.venv/Scripts/python -c \"from mcp.server import Server; print\\([m for m in dir\\(Server\\) if not m.startswith\\('__'\\)]\\)\")",
+      "Bash(.venv/Scripts/python -c \"import mcp.server; print\\(dir\\(mcp.server\\)\\)\")",
+      "Bash(.venv/Scripts/python -c \"from mcp.server.fastmcp import FastMCP; print\\('FastMCP available'\\)\")",
+      "Bash(.venv/Scripts/python -c \"from mcp.server import MCPServer; print\\([m for m in dir\\(MCPServer\\) if not m.startswith\\('__'\\)]\\)\")",
+      "Bash(.venv/Scripts/python -c \"from mcp.server import MCPServer; import inspect; print\\(inspect.getsource\\(MCPServer.tool\\)\\)\")",
+      "Bash(.venv/Scripts/python -c \"from mcp.server import MCPServer; import inspect; print\\(inspect.getsource\\(MCPServer.run_stdio_async\\)\\)\")",
+      "Bash(.venv/Scripts/python -c \"from mcp.server.stdio import stdio_server; print\\('ok'\\)\")",
+      "Bash(.venv/Scripts/python -c \"import schema_migrator.mcp_server; print\\('import OK'\\)\")"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "schema-migrator"
+  ]
+}
